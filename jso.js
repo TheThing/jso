@@ -352,7 +352,7 @@
 
 
 		if (typeof callback === 'function') {
-			callback();
+			callback(state.restoreLocation);
 		}
 
 		// log(atoken);
@@ -405,6 +405,7 @@
 		if (window.location.hash) {
 			request["restoreHash"] = window.location.hash;
 		}
+		request["restoreLocation"] = window.location.href;
 		request["providerID"] = providerid;
 		if (scopes) {
 			request["scopes"] = scopes;
@@ -454,14 +455,14 @@
 		if (i === 1) return k;
 	};
 
-	exp.jso_configure = function(c, opts) {
+	exp.jso_configure = function(c, opts, callback) {
 		config = c;
 		setOptions(opts);
 		try {
 
 			var def = exp.jso_findDefaultEntry(c);
 			log("jso_configure() about to check for token for this entry", def);
-			exp.jso_checkfortoken(def);	
+			exp.jso_checkfortoken(def, null, callback);
 
 		} catch(e) {
 			log("Error when retrieving token from hash: " + e);
