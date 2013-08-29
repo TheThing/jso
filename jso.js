@@ -251,7 +251,7 @@
 	 * childbrowser when the jso context is not receiving the response,
 	 * instead the response is received on a child browser.
 	 */
-	exp.jso_checkfortoken = function(providerID, url, callback) {
+	exp.jso_checkfortoken = function(providerID, url) {
 		var 
 			atoken,
 			h = window.location.toString().replace(/^[^#]*/,''), // Because of stupid Firefox bug — https://bugzilla.mozilla.org/show_bug.cgi?id=483304
@@ -267,6 +267,11 @@
 			if(url.indexOf('#') === -1) return;
 			h = url.substring(url.indexOf('#'));
 			// log('Hah, I got the hash and it is ' +  h);
+		}
+
+		// Check for errors
+		if (h.indexOf("error") !== -1) {
+			throw "Error in auth request";
 		}
 
 		/*
@@ -350,13 +355,9 @@
 			delete internalStates[atoken.state];
 		}
 
-
-		if (typeof callback === 'function') {
-			callback(state.restoreLocation);
-		}
-
 		// log(atoken);
 
+		return state.restoreLocation;
 	}
 
 	/*
@@ -458,15 +459,21 @@
 	exp.jso_configure = function(c, opts, callback) {
 		config = c;
 		setOptions(opts);
-		try {
 
+		if (typeof callback !== 'function') {
+		  callback = function() {};
+		}
+
+		try {
 			var def = exp.jso_findDefaultEntry(c);
 			log("jso_configure() about to check for token for this entry", def);
-			exp.jso_checkfortoken(def, null, callback);
 
+			callback(exp.jso_checkfortoken(def));
 		} catch(e) {
-			log("Error when retrieving token from hash: " + e);
 			window.location.hash = "";
+			log("Error when retrieving token from hash: " + e);
+
+			callback(null, e);
 		}
 		
 	}
