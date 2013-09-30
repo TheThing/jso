@@ -228,7 +228,7 @@
 		var tokens = this.getTokens(provider);
 		tokens = api_storage.filterTokens(tokens, scopes);
 		if (tokens.length < 1) return null;
-		return tokens[0];
+		return tokens[tokens.length - 1];
 	};
 
 	api_storage = new Api_default_storage();
