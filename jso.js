@@ -363,7 +363,7 @@
 	/*
 	 * A config object contains:
 	 */
-	var jso_authrequest = function(providerid, scopes, callback) {
+	var jso_authrequest = exp.jso_authrequest = function(providerid, scopes, callback) {
 
 		var 
 			state,
