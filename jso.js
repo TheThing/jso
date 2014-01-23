@@ -126,10 +126,34 @@
 		  * scopes
 
 	 */
-	Api_default_storage.prototype.saveState =  function (state, obj) {
-		localStorage.setItem("state-" + state, JSON.stringify(obj));
-	}
+	Api_default_storage.prototype.saveState =  function (state, obj, secondTry) {
+		try {
+			localStorage.setItem("state-" + state, JSON.stringify(obj));
+		} catch(e) {
+			var cleaningResult = this.cleanStates();
 
+			if (cleaningResult && !secondTry) {
+				this.saveState(state, obj, true);
+			}
+		}
+	};
+
+	Api_default_storage.prototype.cleanStates = function() {
+		var cleaned = 0;
+
+		try {
+			for(var item in localStorage) {
+				if (localStorage.hasOwnProperty(item) && item.indexOf("state-") === 0) {
+					localStorage.removeItem(item);
+					cleaned++;
+				}
+			}
+		} catch (e) {
+			cleaned = null;
+		}
+
+		return cleaned;
+	};
 
 	/**
 	 * getStage()  returns the state object, but also removes it.
@@ -138,7 +162,7 @@
 	Api_default_storage.prototype.getState = function(state) {
 		// log("getState (" + state+ ")");
 		var obj = JSON.parse(localStorage.getItem("state-" + state));
-		localStorage.removeItem("state-" + state)
+		this.cleanStates();
 		return obj;
 	};
 
