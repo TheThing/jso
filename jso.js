@@ -171,7 +171,7 @@
 	 * Checks if a token, has includes a specific scope.
 	 * If token has no scope at all, false is returned.
 	 */
-	Api_default_storage.prototype.hasScope = function(token, scope) {
+	var hasScope = function(token, scope) {
 		var i;
 		if (!token.scopes) return false;
 		for(i = 0; i < token.scopes.length; i++) {
@@ -184,7 +184,7 @@
 	 * Takes an array of tokens, and removes the ones that
 	 * are expired, and the ones that do not meet a scopes requirement.
 	 */
-	Api_default_storage.prototype.filterTokens = function(tokens, scopes) {
+	var filterTokens = function(tokens, scopes) {
 		var i, j, 
 			result = [],
 			now = epoch(),
@@ -200,7 +200,7 @@
 
 			// Filter out this token if not all scope requirements are met
 			for(j = 0; j < scopes.length; j++) {
-				if (!api_storage.hasScope(tokens[i], scopes[j])) usethis = false;
+				if (!this.hasScope(tokens[i], scopes[j])) usethis = false;
 			}
 
 			if (usethis) result.push(tokens[i]);
@@ -237,9 +237,9 @@
 	 * Save a single token for a provider.
 	 * This also cleans up expired tokens for the same provider.
 	 */
-	Api_default_storage.prototype.saveToken = function(provider, token) {
+	var saveToken = function(provider, token) {
 		var tokens = this.getTokens(provider);
-		tokens = api_storage.filterTokens(tokens);
+		tokens = this.filterTokens(tokens);
 		tokens.push(token);
 		this.saveTokens(provider, tokens);
 	};
@@ -248,14 +248,23 @@
 	 * Get a token if exists for a provider with a set of scopes.
 	 * The scopes parameter is OPTIONAL.
 	 */
-	Api_default_storage.prototype.getToken = function(provider, scopes) {
+	var getToken = function(provider, scopes) {
 		var tokens = this.getTokens(provider);
-		tokens = api_storage.filterTokens(tokens, scopes);
+		tokens = this.filterTokens(tokens, scopes);
 		if (tokens.length < 1) return null;
 		return tokens[tokens.length - 1];
 	};
 
+	// Keep storage unrelated methods inside jso
+	var extendStorageAPI = function(API) {
+		API.hasScope = hasScope;
+		API.filterTokens = filterTokens;
+		API.getToken = getToken;
+		API.saveToken = saveToken;
+	};
+
 	api_storage = new Api_default_storage();
+	extendStorageAPI(api_storage);
 
 
 
@@ -538,6 +547,7 @@
 	};
 
 	exp.jso_registerStorageHandler = function(object) {
+		extendStorageAPI(object);
 		api_storage = object;
 	};
 
