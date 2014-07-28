@@ -466,7 +466,7 @@
 
 			if (token === null) {
 				jso_authrequest(providerid, scopes);
-        return false;
+				return false;
 			}
 		}
 
