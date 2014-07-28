@@ -302,18 +302,18 @@
 			// log('Hah, I got the hash and it is ' +  h);
 		}
 
+		if (h.length < 2) return;
+		atoken = parseQueryString(h.substring(1));
+
 		// Check for errors
-		if (h.indexOf("error") !== -1) {
-			throw "Error in auth request";
+		if (atoken.error) {
+			throw "Error in auth request: " + atoken.error;
 		}
 
 		/*
 		 * Start with checking if there is a token in the hash
 		 */
-		if (h.length < 2) return;
-		if (h.indexOf("access_token") === -1) return;
-		h = h.substring(1);
-		atoken = parseQueryString(h);
+		if (!atoken.access_token) return;
 
 		if (atoken.state) {
 			state = api_storage.getState(atoken.state);
