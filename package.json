@@ -1,6 +1,6 @@
 {
   "name": "jso-browser",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Javascript OAuth 2.0 Library for browser environment",
   "repository": {
     "type": "git",
@@ -12,17 +12,14 @@
     "oauth2",
     "browser"
   ],
-	"author": {
-		"name": "Andreas Aakre Solberg",
-		"email": "andreas.solberg@uninett.no"
-	},
-	"contributors": [{
-		"name": "Eugene Datsky",
-		"email": "eugene@datsky.ru"
-	}],
+  "author": "Andreas Aakre Solberg <andreas.solberg@uninett.no>",
+  "contributors": [
+    "Eugene Datsky <eugene@datsky.ru>"
+  ],
   "license": "LGPL",
   "bugs": {
     "url": "https://github.com/princed/jso/issues"
   },
-  "homepage": "https://github.com/princed/jso"
+  "homepage": "https://github.com/princed/jso",
+  "main": "jso.js"
 }
