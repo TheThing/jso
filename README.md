@@ -1,7 +1,7 @@
 # JSO - a Javascript OAuth Library
 
-**UPDATE March 20th 2013: I just commited [JSO version 2.0, a redesigned library](https://github.com/andreassolberg/jso/tree/version2). It is only in beta state yet, but feel free to test it.**
-
+**It's a fork of JSO 1.0 with various fixes and enhancements published to npm for our own convinience, and we're probably not going to support it much. But feel free to use though.**  
+**See original [JSO 1.0](https://github.com/andreassolberg/jso/) and [JSO 2.0 beta](https://github.com/andreassolberg/jso/tree/version2).**
 
 This library was written by Andreas Åkre Solberg (UNINETT AS) in March 2012.
 
