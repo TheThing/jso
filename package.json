@@ -1,6 +1,6 @@
 {
   "name": "jso-browser",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Javascript OAuth 2.0 Library for browser environment",
   "repository": {
     "type": "git",

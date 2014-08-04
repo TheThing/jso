@@ -1,6 +1,7 @@
-(function(exp, $) {
+(function(global, $) {
 
-	var 
+	var
+		exp = {},
 		config = {},
 		default_lifetime = 3600,
 		options = {
@@ -284,7 +285,7 @@
 	 * childbrowser when the jso context is not receiving the response,
 	 * instead the response is received on a child browser.
 	 */
-	exp.jso_checkfortoken = function(providerID, url) {
+	exp.checkForToken = function(providerID, url) {
 		var 
 			atoken,
 			h = window.location.toString().replace(/^[^#]*/,''), // Because of stupid Firefox bug — https://bugzilla.mozilla.org/show_bug.cgi?id=483304
@@ -292,7 +293,7 @@
 			state,
 			co;
 
-		log("jso_checkfortoken(" + providerID + ")");
+		log("checkForToken(" + providerID + ")");
 
 		// If a url is provided 
 		if (url) {
@@ -396,7 +397,7 @@
 	/*
 	 * A config object contains:
 	 */
-	var jso_authrequest = exp.jso_authrequest = function(providerid, scopes, callback) {
+	exp.authRequest = function(providerid, scopes, callback) {
 
 		var 
 			state,
@@ -454,7 +455,7 @@
 
 	};
 
-	exp.jso_ensureTokens = function (ensure) {
+	exp.ensureTokens = function (ensure) {
 		var providerid, scopes, token;
 		for(providerid in ensure) {
 			scopes = undefined;
@@ -465,7 +466,7 @@
 			log(token);
 
 			if (token === null) {
-				jso_authrequest(providerid, scopes);
+				exp.authRequest(providerid, scopes);
 				return false;
 			}
 		}
@@ -474,7 +475,7 @@
 		return true;
 	}
 
-	exp.jso_findDefaultEntry = function(c) {
+	exp.findDefaultEntry = function(c) {
 		var 
 			k,
 			i = 0;
@@ -490,7 +491,7 @@
 		if (i === 1) return k;
 	};
 
-	exp.jso_configure = function(c, opts, callback) {
+	exp.configure = function(c, opts, callback) {
 		config = c;
 		setOptions(opts);
 
@@ -499,10 +500,10 @@
 		}
 
 		try {
-			var def = exp.jso_findDefaultEntry(c);
-			log("jso_configure() about to check for token for this entry", def);
+			var def = exp.findDefaultEntry(c);
+			log("configure() about to check for token for this entry", def);
 
-			callback(exp.jso_checkfortoken(def));
+			callback(exp.checkForToken(def));
 		} catch(e) {
 			window.location.hash = "";
 			log("Error when retrieving token from hash: " + e);
@@ -512,7 +513,7 @@
 		
 	}
 
-	exp.jso_dump = function() {
+	exp.dump = function() {
 		var key;
 		for(key in config) {
 
@@ -525,16 +526,16 @@
 		}
 	}
 
-	exp.jso_wipe = function() {
+	exp.wipe = function() {
 		var key;
-		log("jso_wipe()");
+		log("wipe()");
 		for(key in config) {
 			log("Wipping tokens for " + key);
 			api_storage.wipeTokens(key);
 		}
 	}
 
-	exp.jso_getToken = function(providerid, scopes) {
+	exp.getToken = function(providerid, scopes) {
 		var token = api_storage.getToken(providerid, scopes);
 		if (!token) return null;
 		if (!token["access_token"]) return null;
@@ -543,11 +544,11 @@
 
 
 
-	exp.jso_registerRedirectHandler = function(callback) {
+	exp.registerRedirectHandler = function(callback) {
 		api_redirect = callback;
 	};
 
-	exp.jso_registerStorageHandler = function(object) {
+	exp.registerStorageHandler = function(object) {
 		extendStorageAPI(object);
 		api_storage = object;
 	};
@@ -616,8 +617,8 @@
 
 		if (!token) {
 			if (allowia) {
-				log("Perform authrequest");
-				jso_authrequest(providerid, scopes, function() {
+				log("Perform exp.authRequest");
+				exp.authRequest(providerid, scopes, function() {
 					token = api_storage.getToken(providerid, scopes);
 					performAjax();
 				});
@@ -631,5 +632,10 @@
 		return performAjax();
 	};
 
+	if (module && module.exports) {
+		module.exports = exp;
+	} else {
+		global.jso = exp;
+	}
 
 })(window, window.jQuery);
