@@ -388,7 +388,7 @@
   /*
    * A config object contains:
    */
-  exp.authRequest = function (providerid, scopes, callback) {
+  exp.authRequest = function (providerid, scopes, callback, extraQueryParameters) {
 
     var
       state,
@@ -421,6 +421,13 @@
     }
     if (scopes) {
       request['scope'] = scopes.join(' ');
+    }
+    if (extraQueryParameters) {
+      for (var parameterName in extraQueryParameters) {
+        if (extraQueryParameters.hasOwnProperty(parameterName)) {
+          request[parameterName] = extraQueryParameters[parameterName];
+        }
+      }
     }
 
     authurl = encodeURL(co.authorization, request);
