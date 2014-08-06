@@ -446,13 +446,38 @@
 
   };
 
+  /**
+   * Get an array of scopes except required
+   * @param {string} providerid
+   * @param {string[]} scopes
+   * @return {string[]}
+   */
+  exp.getRequiredScopes = function (providerid, scopes) {
+    var optionalScopes = config[providerid].optionalScopes;
+    if (!optionalScopes || !optionalScopes.length) {
+      return scopes;
+    }
+
+    var requiredScopes = [];
+    for (var i = 0; i < scopes.length; i++) {
+      var isRequired = true;
+      for (var j = 0; j < optionalScopes.length; j++) {
+        isRequired = isRequired && scopes[i] !== optionalScopes[j];
+      }
+      if (isRequired) {
+        requiredScopes.push(scopes[i]);
+      }
+    }
+    return requiredScopes;
+  };
+
   exp.ensureTokens = function (ensure) {
     var providerid, scopes, token;
     for (providerid in ensure) {
       if (ensure.hasOwnProperty(providerid)) {
         scopes = undefined;
         if (ensure[providerid]) scopes = ensure[providerid];
-        token = api_storage.getToken(providerid, scopes);
+        token = api_storage.getToken(providerid, this.getRequiredScopes(providerid, scopes));
 
         log('Ensure token for provider [' + providerid + '] ');
         log(token);
@@ -561,6 +586,7 @@
     var
       allowia,
       scopes,
+      requiredScopes,
       token,
       providerid,
       co;
@@ -568,7 +594,8 @@
     providerid = settings.jso_provider;
     allowia = settings.jso_allowia || false;
     scopes = settings.jso_scopes;
-    token = api_storage.getToken(providerid, scopes);
+    requiredScopes = exp.getRequiredScopes(providerid, scopes);
+    token = api_storage.getToken(providerid, requiredScopes);
     co = config[providerid];
 
     // var successOverridden = settings.success;
@@ -616,7 +643,7 @@
       if (allowia) {
         log('Perform exp.authRequest');
         exp.authRequest(providerid, scopes, function () {
-          token = api_storage.getToken(providerid, scopes);
+          token = api_storage.getToken(providerid, requiredScopes);
           performAjax();
         });
         return;
