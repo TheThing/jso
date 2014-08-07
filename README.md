@@ -1,18 +1,18 @@
 # JSO - a Javascript OAuth Library
 
-**It's a fork of JSO 1.0 with various fixes and enhancements published to npm for our own convinience, and we're probably not going to support it much. But feel free to use though.**  
+**This is a fork of JSO 1.0 with various fixes and enhancements published to npm for our own convinience. Feel free to use though we probably aren't going to support it much.**  
 **See original [JSO 1.0](https://github.com/andreassolberg/jso/) and [JSO 2.0 beta](https://github.com/andreassolberg/jso/tree/version2).**
 
 ## Fork's features
 * `optionalScopes` param in config to denote scope that shouldn't be ensured.  
-* Extra query parameters in authorization request via `extraQueryParameters` param in `authRequest` method.
-* Exposes as CommonJS module if available otherwise methods are kept inside global object `jso`.
-* Reduced amount of methods that are need to be implemented in custom storage. Required method are `saveState`, `cleanStates`, `getState`, `saveTokens`, `getTokens`, `wipeTokens`.
-* States are cleaned up on storage fail.
-* `configure` method has callback returning error (including errors from server) or location to restore.
+* Ability to add extra query parameters in authorization request via `extraQueryParameters` param in `authRequest` method.
+* Exposes as CommonJS module when possible; otherwise, methods will be kept inside the global object `jso`.
+* Reduced amount of methods that need to be implemented in custom storage. Required methods are `saveState`, `cleanStates`, `getState`, `saveTokens`, `getTokens`, `wipeTokens`.
+* States are cleaned up on storage failure.
+* `configure` method has a callback returning error (including errors from server) or location to restore.
 * `getToken` returns token with metadata. 
-* `getToken` returns last appropriate token instead of first.
-* Worked around Firefox location.hash bug.
+* `getToken` returns the last received appropriate token instead of the first one.
+* Workaround for the Firefox `location.hash` bug.
 
 ## Original JSO
 
