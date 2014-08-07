@@ -454,7 +454,7 @@
   };
 
   /**
-   * Get an array of scopes except required
+   * Get an array of scopes except optional
    * @param {string} providerid
    * @param {string[]} scopes
    * @return {string[]}
