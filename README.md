@@ -44,7 +44,7 @@ The software is dual-licenced with *The GNU Lesser General Public License, versi
 * <http://opensource.org/licenses/LGPL-3.0>
 
 
-## Features
+## Features [![NPM version](https://badge.fury.io/js/jso-browser.svg)](https://www.npmjs.org/package/jso-browser)
 
 * Implements OAuth 2.0 Implicit Flow. All you need is a single javascript file.
 * Supports the `bearer` access token type.
