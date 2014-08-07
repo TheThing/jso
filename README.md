@@ -3,6 +3,19 @@
 **It's a fork of JSO 1.0 with various fixes and enhancements published to npm for our own convinience, and we're probably not going to support it much. But feel free to use though.**  
 **See original [JSO 1.0](https://github.com/andreassolberg/jso/) and [JSO 2.0 beta](https://github.com/andreassolberg/jso/tree/version2).**
 
+## Fork's features
+* `optionalScopes` param in config to denote scope that shouldn't be ensured.  
+* Extra query parameters in authorization request via `extraQueryParameters` param in `authRequest` method.
+* Exposes as CommonJS module if available otherwise methods are kept inside global object `jso`.
+* Reduced amount of methods that are need to be implemented in custom storage. Required method are `saveState`, `cleanStates`, `getState`, `saveTokens`, `getTokens`, `wipeTokens`.
+* States are cleaned up on storage fail.
+* `configure` method has callback returning error (including errors from server) or location to restore.
+* `getToken` returns token with metadata. 
+* `getToken` returns last appropriate token instead of first.
+* Worked around Firefox location.hash bug.
+
+## Original JSO
+
 This library was written by Andreas Åkre Solberg (UNINETT AS) in March 2012.
 
 * [Read the blog of Andreas Åkre Solberg](http://rnd.feide.no)
