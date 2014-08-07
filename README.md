@@ -4,7 +4,7 @@
 **See original [JSO 1.0](https://github.com/andreassolberg/jso/) and [JSO 2.0 beta](https://github.com/andreassolberg/jso/tree/version2).**
 
 ## Fork's features
-* `optionalScopes` param in config to denote scope that shouldn't be ensured.  
+* `optionalScopes` param in config to denote scopes that shouldn't be ensured.  
 * Ability to add extra query parameters in authorization request via `extraQueryParameters` param in `authRequest` method.
 * Exposes as CommonJS module when possible; otherwise, methods will be kept inside the global object `jso`.
 * Reduced amount of methods that need to be implemented in custom storage. Required methods are `saveState`, `cleanStates`, `getState`, `saveTokens`, `getTokens`, `wipeTokens`.
