@@ -1,6 +1,6 @@
 # JSO - a Javascript OAuth Library
 
-**This is a fork of JSO 1.0 with various fixes and enhancements published to npm for our own convinience. Feel free to use though we probably aren't going to support it much.**  
+**This is a fork of JSO 1.0 with various fixes and enhancements published to npm for our own convenience. Feel free to use though we probably aren't going to support it much.**  
 **See original [JSO 1.0](https://github.com/andreassolberg/jso/) and [JSO 2.0 beta](https://github.com/andreassolberg/jso/tree/version2).**
 
 ## Fork's features [![NPM version](https://badge.fury.io/js/jso-browser.svg)](https://www.npmjs.org/package/jso-browser)
