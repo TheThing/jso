@@ -3,7 +3,7 @@
 **This is a fork of JSO 1.0 with various fixes and enhancements published to npm for our own convinience. Feel free to use though we probably aren't going to support it much.**  
 **See original [JSO 1.0](https://github.com/andreassolberg/jso/) and [JSO 2.0 beta](https://github.com/andreassolberg/jso/tree/version2).**
 
-## Fork's features
+## Fork's features [![NPM version](https://badge.fury.io/js/jso-browser.svg)](https://www.npmjs.org/package/jso-browser)
 * `optionalScopes` param in config to denote scopes that shouldn't be ensured.  
 * Ability to add extra query parameters in authorization request via `extraQueryParameters` param in `authRequest` method.
 * Exposes as CommonJS module when possible; otherwise, methods will be kept inside the global object `jso`.
@@ -44,7 +44,7 @@ The software is dual-licenced with *The GNU Lesser General Public License, versi
 * <http://opensource.org/licenses/LGPL-3.0>
 
 
-## Features [![NPM version](https://badge.fury.io/js/jso-browser.svg)](https://www.npmjs.org/package/jso-browser)
+## Features
 
 * Implements OAuth 2.0 Implicit Flow. All you need is a single javascript file.
 * Supports the `bearer` access token type.
