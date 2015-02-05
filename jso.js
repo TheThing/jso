@@ -1,3 +1,5 @@
+'use strict';
+
 (function (global, $) {
 
   var
@@ -23,7 +25,7 @@
    */
   var uuid = function () {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
   };
@@ -109,7 +111,12 @@
    * Redirects the user to a specific URL
    */
   api_redirect = function (url) {
-    window.location = url;
+    var newWindow = window.open(url, 'oauth2_dialogue', 'height=600,width=450');
+    if (newWindow.focus) {
+      newWindow.focus();
+    }
+    return newWindow;
+    //window.location = url;
   };
 
   Api_default_storage = function () {
@@ -223,12 +230,29 @@
 
   Api_default_storage.prototype.getTokens = function (provider) {
     // log("Get Tokens (" + provider+ ")");
-    var tokens = JSON.parse(localStorage.getItem('tokens-' + provider));
-    if (!tokens) tokens = [];
+    if (provider) {
+      var tokens = JSON.parse(localStorage.getItem('tokens-' + provider));
+      if (!tokens) tokens = [];
 
-    log('Token received', tokens);
-    return tokens;
+      log('Token received', tokens);
+      return tokens;
+    }
+
+    var out = [];
+
+    for (var item in localStorage) {
+      if (localStorage.hasOwnProperty(item) && item.indexOf('state-') === 0) {
+        try {
+          out.push(JSON.parse(localStorage.getItem(item)) || []);
+        }
+        catch (e) {
+          out.push([]);
+        }
+      }
+    }
+    return out;
   };
+
   Api_default_storage.prototype.wipeTokens = function (provider) {
     localStorage.removeItem('tokens-' + provider);
   };
@@ -254,12 +278,29 @@
     return tokens[tokens.length - 1];
   };
 
+  /*
+   * Get all stored and valid tokens.
+   */
+  var getAllTokens = function() {
+    var tokens = this.getTokens();
+    for (var i = 0; i < tokens.length; i++) {
+      tokens[i] = this.filterTokens(tokens[i]);
+
+      if (tokens[i].length < 0) {
+        tokens.splice(i, 1);
+        i--;
+      }
+    }
+    return tokens;
+  };
+
   // Keep storage unrelated methods inside jso
   var extendStorageAPI = function (API) {
     API.hasScope = hasScope;
     API.filterTokens = filterTokens;
     API.getToken = getToken;
     API.saveToken = saveToken;
+    API.getAllTokens = getAllTokens;
   };
 
   api_storage = new Api_default_storage();
@@ -412,7 +453,6 @@
       internalStates[state] = callback;
     }
 
-
     if (co['redirect_uri']) {
       request['redirect_uri'] = co['redirect_uri'];
     }
@@ -449,8 +489,22 @@
     log(JSON.parse(JSON.stringify(request)));
 
     api_storage.saveState(state, request);
-    api_redirect(authurl);
+    var newWindow = api_redirect(authurl);
 
+    if (callback) {
+      var timer = setInterval(function() {
+        if(newWindow.closed) {
+          clearInterval(timer);
+          if (internalStates[state]) {
+            internalStates[state]();
+            delete internalStates[state];
+          }
+          exp.checkForToken(providerid);
+        }
+      }, 500);
+    }
+
+    return newWindow;
   };
 
   /**
@@ -565,6 +619,10 @@
     }
   };
 
+  exp.getTokens = function () {
+    var tokens = api_storage.getAllTokens();
+  };
+
   exp.getToken = function (providerid, scopes) {
     var token = api_storage.getToken(providerid, scopes);
     if (!token) return null;
@@ -583,90 +641,10 @@
   };
 
 
-  /*
-   * From now on, we only perform tasks that require jQuery.
-   * Like adding the $.oajax function.
-   */
-  if (typeof $ === 'undefined') return;
-
-  $.oajax = function (settings) {
-    var
-      allowia,
-      scopes,
-      requiredScopes,
-      token,
-      providerid,
-      co;
-
-    providerid = settings.jso_provider;
-    allowia = settings.jso_allowia || false;
-    scopes = settings.jso_scopes;
-    requiredScopes = exp.getRequiredScopes(providerid, scopes);
-    token = api_storage.getToken(providerid, requiredScopes);
-    co = config[providerid];
-
-    // var successOverridden = settings.success;
-    // settings.success = function(response) {
-    // }
-
-    var errorOverridden = settings.error || null;
-
-    var performAjax = function () {
-      // log("Perform ajax!");
-
-      if (!token) throw 'Could not perform AJAX call because no valid tokens was found.';
-
-      if (co['presenttoken'] && co['presenttoken'] === 'qs') {
-        // settings.url += ((h.indexOf("?") === -1) ? '?' : '&') + "access_token=" + encodeURIComponent(token["access_token"]);
-        if (!settings.data) settings.data = {};
-        settings.data['access_token'] = token['access_token'];
-      } else {
-        if (!settings.headers) settings.headers = {};
-        settings.headers['Authorization'] = 'Bearer ' + token['access_token'];
-      }
-      return $.ajax(settings);
-    };
-
-    settings.error = function (jqXHR, textStatus, errorThrown) {
-      log('error(jqXHR, textStatus, errorThrown)');
-      log(jqXHR);
-      log(textStatus);
-      log(errorThrown);
-
-      if (jqXHR.status === 401) {
-
-        log('Token expired. About to delete this token');
-        log(token);
-        api_storage.wipeTokens(providerid);
-
-      }
-      if (errorOverridden && typeof errorOverridden === 'function') {
-        errorOverridden(jqXHR, textStatus, errorThrown);
-      }
-    };
-
-
-    if (!token) {
-      if (allowia) {
-        log('Perform exp.authRequest');
-        exp.authRequest(providerid, scopes, function () {
-          token = api_storage.getToken(providerid, requiredScopes);
-          performAjax();
-        });
-        return;
-      } else {
-        throw 'Could not perform AJAX call because no valid tokens was found.';
-      }
-    }
-
-
-    return performAjax();
-  };
-
   if (module && module.exports) {
     module.exports = exp;
   } else {
     global.jso = exp;
   }
 
-})(window, window.jQuery);
+})(window);
